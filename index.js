@@ -3,6 +3,9 @@ const express = require("express")
 
 const app = express()
 
+const mergetest = "머지 테스트 입니다."
+const conflicttest = "컨플릭트 테스트 입니다."
+
 app.use(express.json())
 
 
