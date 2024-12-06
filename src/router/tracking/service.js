@@ -1,5 +1,6 @@
 const client = require("../../database/postgreSQL")
 const customError = require("../../middleware/customError")
+const {createTrackingImgSQL,getMyTrackingImgSQL} = require("./sql")
 
 // ================================== 공통 함수 ============================
 
@@ -13,34 +14,73 @@ function convertMultiLine(line) {
     return `MULTILINESTRING(${multiLine})`
 }
 
+// center 값을 GEOGRAPHY POINT 형태로 변환
+function convertCenterPoint(point){
+    return `POINT(${point.lng} ${point.lat})` 
+}
+
 // DB에서 꺼내 온 값 구글 맵에 활용할 형태로 변환
 
 function convertFromMultiLine(multiLine) {
-    // 'MULTILINE' 제거하고 양쪽 괄호 삭제
-    let cleanedString = multiLine.replace("MULTILINESTRING", "").trim();
-    cleanedString = cleanedString.slice(1, -1); // 양쪽 괄호 제거
+    // 먼저 MULTILINESTRING , 괄호 벗기고, 뒤의 괄호 기준으로 나누기
+    const splitLine = multiLine
+        .replace("MULTILINESTRING", "")
+        .slice(1, -1)
+        .split("),") 
 
-    // 각 라인을 나누기
-    const lines = cleanedString.split("), (").map(line => line.replace("(", "").replace(")", ""));
+    //나눈 것들 배열로 분배
+    const seperatedSegments = splitLine.map(segment => {
+        if(segment.startsWith("(")){
+            segment = segment.slice(1)
+        }
+        if(segment.endsWith(")")){
+            segment = segment.slice(0,-1)
+        }
 
-    // 각 라인을 좌표 배열로 변환
-    const parsedLines = lines.map((line) => {
-        return line.split(", ").map((point) => {
-            const [lng, lat] = point.split(" ").map(Number); // 경도와 위도를 숫자로 변환
-            return { lat, lng }; // 객체로 반환
+        // 각 배열들 , 기준 (점들)으로 나누고 lng,lat 에 띄어쓰기 기준으로 나눠서 맵핑
+        const points = segment.split(",").map(point => {
+            const [lng, lat] = point.split(" ").map(Number);
+            return { lat, lng };
         });
+
+        return points;
     });
 
-    return parsedLines;
+    return seperatedSegments;
 }
 
 // ===================================== 서비스 ===================================
 
 // 트래킹 이미지 생성
 const createTrackingImg = async (req,res,next) => {
-    const {line,searchPoint,center,zoom,sharing,color,thickness,background} = req.body
-
-
+    const {user_idx,line,searchpoint,center,zoom,heading,sharing,color,thickness,background} = req.body
 
     const multiLine = convertMultiLine(line)
+    const point = convertCenterPoint(center)
+
+    try{
+        await client.query(createTrackingImgSQL, [user_idx,multiLine,searchpoint,point,zoom,heading,sharing,color,thickness,background])
+        res.status(200).send({})
+    } catch(e){
+        next(e)
+    }
 }
+
+
+// 나의 트래킹 이미지 가져오기
+const getMyTrackingImg = async (req,res,next) => {
+    const {user_idx} = req.body
+
+    try{
+        const result = await client.query(getMyTrackingImgSQL, [user_idx])
+        console.log(result.rows[0].line)
+        result.rows.forEach(obj => {
+            obj.line = convertFromMultiLine(obj.line)
+        });
+        res.status(200).send({ message : result.rows })
+    } catch(e){
+        next(e)
+    }
+}
+
+module.exports = {createTrackingImg,getMyTrackingImg}

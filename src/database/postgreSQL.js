@@ -4,7 +4,7 @@ const client = new Pool({
     "user" : "ubuntu",
     "password" : "1234",
     "host" : "localhost",
-    "database" : "web",
+    "database" : "dmap",
     "port" : 5432,
     "max" : 10
 })
