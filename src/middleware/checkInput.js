@@ -7,6 +7,7 @@ const checkRegInput = (reg,check) => {
         const value = req.body[check] || req.params[check] || req.query[check]
 
         try {
+
             if(!reg.test(value) || !value) {
                 throw customError(400, `${check} 양식 오류`)
             }
@@ -140,3 +141,4 @@ const checkCenter = (input) => {
 
 
 module.exports = {checkRegInput,checkIdx,checkZoom,checkHeading,checkSharing,checkThickness,checkBackground,checkLine,checkCenter}
+

@@ -1,6 +1,8 @@
 const client = require("../../database/postgreSQL")
 const customError = require("../../middleware/customError")
+
 const {createTrackingImgSQL,getMyTrackingImgSQL} = require("./sql")
+
 
 // ================================== 공통 함수 ============================
 
@@ -13,6 +15,7 @@ function convertMultiLine(line) {
 
     return `MULTILINESTRING(${multiLine})`
 }
+
 
 // center 값을 GEOGRAPHY POINT 형태로 변환
 function convertCenterPoint(point){
