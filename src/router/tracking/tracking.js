@@ -1,6 +1,7 @@
 const router = require("express").Router()
 
 const {createTrackingImg,getMyTrackingImg,getUserTrackingImg,deleteTrackingImg,getTrackingLine} = require("./service")
+
 const {regColor,searchPoint} = require("../../constant/regx")
 const {checkRegInput,checkIdx,checkZoom,checkHeading,checkSharing,checkThickness,checkBackground,checkLine,checkCenter} = require("../../middleware/checkInput")
 
@@ -18,6 +19,7 @@ router.post("/",
     checkBackground("background"),
     createTrackingImg
 )
+
 
 // 나의 트래킹 이미지 가져오기
 router.get("/",
@@ -46,7 +48,8 @@ router.put("/:idx",
 
 // 트래킹 이미지 공유 상태 변경
 router.put("/:idx",
-    
+
 )
 
 module.exports = router 
+

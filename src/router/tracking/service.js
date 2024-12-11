@@ -2,6 +2,7 @@ const client = require("../../database/postgreSQL")
 const customError = require("../../middleware/customError")
 const {createTrackingImgSQL,getMyTrackingImgSQL,getUserTrackingImgSQL,deleteTrackingImgSQL,getTrackingLineSQL} = require("./sql")
 
+
 // ================================== 공통 함수 ============================
 
 // 구글 맵에서 사용되는 데이터 PostgreGIS 형태로 변환
@@ -51,7 +52,6 @@ function convertFromMultiLine(multiLine) {
 
 // ===================================== 서비스 ===================================
 
-
 // 트래킹 이미지 생성
 const createTrackingImg = async (req,res,next) => {
     const {user_idx,line,searchpoint,center,zoom,heading,sharing,color,thickness,background} = req.body
@@ -83,6 +83,7 @@ const getMyTrackingImg = async (req,res,next) => {
         next(e)
     }
 }
+
 
 // 다른 사용자 전체 트래킹 이미지 가져오기
 const getUserTrackingImg = async (req,res,next) => {
@@ -130,3 +131,4 @@ const getTrackingLine = async (req,res,next) => {
 }
 
 module.exports = {createTrackingImg,getMyTrackingImg,getUserTrackingImg,deleteTrackingImg,getTrackingLine}
+
