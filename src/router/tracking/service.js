@@ -1,6 +1,6 @@
 const client = require("../../database/postgreSQL")
 const customError = require("../../middleware/customError")
-const {createTrackingImgSQL,getMyTrackingImgSQL} = require("./sql")
+const {createTrackingImgSQL,getMyTrackingImgSQL,getUserTrackingImgSQL,deleteTrackingImgSQL,getTrackingLineSQL} = require("./sql")
 
 // ================================== 공통 함수 ============================
 
@@ -51,6 +51,7 @@ function convertFromMultiLine(multiLine) {
 
 // ===================================== 서비스 ===================================
 
+
 // 트래킹 이미지 생성
 const createTrackingImg = async (req,res,next) => {
     const {user_idx,line,searchpoint,center,zoom,heading,sharing,color,thickness,background} = req.body
@@ -83,4 +84,49 @@ const getMyTrackingImg = async (req,res,next) => {
     }
 }
 
-module.exports = {createTrackingImg,getMyTrackingImg}
+// 다른 사용자 전체 트래킹 이미지 가져오기
+const getUserTrackingImg = async (req,res,next) => {
+    const {idx} = req.params
+
+    try{
+        const result = await client.query(getUserTrackingImgSQL, [idx])
+        result.rows.forEach(obj => {
+            obj.line = convertFromMultiLine(obj.line)
+        });
+        res.status(200).send({ message : result.rows })
+    }catch(e){
+        next(e)
+    }
+}
+
+// 나의 트래킹 이미지 삭제
+const deleteTrackingImg = async (req,res,next) => {
+    const {user_idx} = req.body
+    const {idx} = req.params
+
+    try{
+        await client.query(deleteTrackingImgSQL,[user_idx,idx])
+        res.status(200).send({})
+    }catch(e){
+        next(e)
+    }
+}
+
+
+// 트래킹 라인 가져오기
+const getTrackingLine = async (req,res,next) => {
+    const {user_idx} = req.body
+    const {idx} = req.params
+
+    try{
+        const result = await client.query(getTrackingLineSQL, [user_idx,idx])
+        result.rows.forEach(obj => {
+            obj.line = convertFromMultiLine(obj.line)
+        });
+        res.status(200).send({ message : result.rows })
+    }catch(e){
+        next(e)
+    }
+}
+
+module.exports = {createTrackingImg,getMyTrackingImg,getUserTrackingImg,deleteTrackingImg,getTrackingLine}

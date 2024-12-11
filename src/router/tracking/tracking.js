@@ -1,6 +1,6 @@
 const router = require("express").Router()
 
-const {createTrackingImg,getMyTrackingImg} = require("./service")
+const {createTrackingImg,getMyTrackingImg,getUserTrackingImg,deleteTrackingImg,getTrackingLine} = require("./service")
 const {regColor,searchPoint} = require("../../constant/regx")
 const {checkRegInput,checkIdx,checkZoom,checkHeading,checkSharing,checkThickness,checkBackground,checkLine,checkCenter} = require("../../middleware/checkInput")
 
@@ -26,17 +26,17 @@ router.get("/",
 
 // 다른 사용자의 전체 트래킹 이미지 가져오기
 router.get("/account/:idx",
-
+    getUserTrackingImg
 )
 
 // 나의 트래킹 이미지 삭제
 router.delete("/:idx",
-
+    deleteTrackingImg
 )
 
 // 트래킹 라인 가져오기
 router.get("/:idx",
-
+    getTrackingLine
 )
 
 // 트래킹 이미지 수정
