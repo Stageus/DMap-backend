@@ -1,9 +1,11 @@
 const router = require("express").Router()
 
+
 const {createTrackingImg,getMyTrackingImg,getUserTrackingImg,deleteTrackingImg,getTrackingLine,putTrackingImage} = require("./service")
 const {regColor,searchPoint} = require("../../constant/regx")
 const {checkRegInput,checkIdx,checkZoom,checkHeading,checkSharing,checkThickness,checkBackground,checkLine,checkCenter} = require("../../middleware/checkInput")
 const {checkData,checkSetData} = require("../../middleware/checkData")
+
 
 // 트래킹 이미지 생성
 router.post("/",
@@ -20,6 +22,7 @@ router.post("/",
     createTrackingImg
 )
 
+
 // 나의 트래킹 이미지 가져오기
 router.get("/",
     getMyTrackingImg
@@ -27,7 +30,9 @@ router.get("/",
 
 // 다른 사용자의 전체 트래킹 이미지 가져오기
 router.get("/account/:idx",
+
     checkData("account.user","idx"),
+
     getUserTrackingImg
 )
 
@@ -54,3 +59,4 @@ router.put("/",
 )
 
 module.exports = router 
+

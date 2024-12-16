@@ -93,6 +93,7 @@ AND
     idx = $2
 `
 
+
 const putTrackingImageSQL = 
 `
 UPDATE
@@ -112,3 +113,4 @@ AND
 
 `
 module.exports = {createTrackingImgSQL,getMyTrackingImgSQL,getUserTrackingImgSQL,deleteTrackingImgSQL,getTrackingLineSQL,putTrackingImageSQL}
+

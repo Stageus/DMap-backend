@@ -1,6 +1,8 @@
 const client = require("../../database/postgreSQL")
 const customError = require("../../middleware/customError")
+
 const {createTrackingImgSQL,getMyTrackingImgSQL,getUserTrackingImgSQL,deleteTrackingImgSQL,getTrackingLineSQL,putTrackingImageSQL} = require("./sql")
+
 
 // ================================== 공통 함수 ============================
 
@@ -50,7 +52,6 @@ function convertFromMultiLine(multiLine) {
 }
 
 // ===================================== 서비스 ===================================
-
 
 // 트래킹 이미지 생성
 const createTrackingImg = async (req,res,next) => {
@@ -150,3 +151,4 @@ const putSharingTrackingImg = async (req,res,next) => {
 }
 
 module.exports = {createTrackingImg,getMyTrackingImg,getUserTrackingImg,deleteTrackingImg,getTrackingLine,putTrackingImage}
+
