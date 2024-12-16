@@ -14,8 +14,8 @@ app.use(express.json())
 const trackingRouter = require("./src/router/tracking/tracking")
 app.use("/tracking", trackingRouter)
 
-// const snsRouter = require("./src/router/sns/sns")
-// app.use("/sns", snsRouter)
+const snsRouter = require("./src/router/sns/sns")
+app.use("/sns", snsRouter)
 
 // const searchRouter = require("./src/router/search/search")
 // app.use("/search", searchRouter)
