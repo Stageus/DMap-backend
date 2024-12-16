@@ -93,5 +93,22 @@ AND
     idx = $2
 `
 
+const putTrackingImageSQL = 
+`
+UPDATE
+    tracking.list
+SET
+    center = $1,
+    zoom = $2,
+    heading = $3,
+    sharing = $4,
+    color = $5,
+    thickness = $6,
+    background = $7
+WHERE
+    user_idx = $8
+AND
+    idx = $9
 
-module.exports = {createTrackingImgSQL,getMyTrackingImgSQL,getUserTrackingImgSQL,deleteTrackingImgSQL,getTrackingLineSQL}
+`
+module.exports = {createTrackingImgSQL,getMyTrackingImgSQL,getUserTrackingImgSQL,deleteTrackingImgSQL,getTrackingLineSQL,putTrackingImageSQL}

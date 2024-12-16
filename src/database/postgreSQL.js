@@ -2,7 +2,7 @@ const { Pool } = require("pg")
 
 const client = new Pool({
     "user" : "ubuntu",
-    "password" : "1234",
+    "password" : process.env.PGSQL_PW,
     "host" : "localhost",
     "database" : "dmap",
     "port" : 5432,
