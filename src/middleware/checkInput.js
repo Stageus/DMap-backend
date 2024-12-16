@@ -145,3 +145,4 @@ const checkCenter = (input) => {
 
 
 module.exports = {checkRegInput,checkIdx,checkZoom,checkHeading,checkSharing,checkThickness,checkBackground,checkLine,checkCenter}
+

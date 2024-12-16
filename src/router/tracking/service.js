@@ -51,7 +51,6 @@ function convertFromMultiLine(multiLine) {
 
 // ===================================== 서비스 ===================================
 
-
 // 트래킹 이미지 생성
 const createTrackingImg = async (req,res,next) => {
     const {user_idx,line,searchpoint,center,zoom,heading,sharing,color,thickness,background} = req.body

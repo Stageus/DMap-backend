@@ -1,9 +1,11 @@
 const router = require("express").Router()
 
+
 const {createTrackingImg,getMyTrackingImg,getUserTrackingImg,deleteTrackingImg,getTrackingLine,putTrackingImage} = require("./service")
 const {regColor,searchPoint} = require("../../constant/regx")
 const {checkRegInput,checkIdx,checkZoom,checkHeading,checkSharing,checkThickness,checkBackground,checkLine,checkCenter} = require("../../middleware/checkInput")
 const {checkData,checkSetData} = require("../../middleware/checkData")
+
 
 // 트래킹 이미지 생성
 router.post("/",
@@ -52,5 +54,4 @@ router.put("/:idx",
 router.put("/",
     checkSetData("idxList"),
 )
-
 module.exports = router 

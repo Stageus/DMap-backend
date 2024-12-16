@@ -1,6 +1,7 @@
 const customError = require("../middleware/customError")
 const client = require("../database/postgreSQL")
 
+
 const checkData = (what,input) => {
     return async (req,res,next) => {
         const value = req.body[input] || req.params[input] || req.query[input] || req.decoded[input]
@@ -40,3 +41,4 @@ const checkSetData = (array) => {
 }
 
 module.exports = {checkData,checkSetData}
+
