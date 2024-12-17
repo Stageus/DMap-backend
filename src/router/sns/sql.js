@@ -14,4 +14,59 @@ WHERE
 COMMIT;
 `
 
-module.exports = {postLikeTrackingImgSQL}
+const getWhatTrackingImageSQL =
+`
+SELECT 
+    idx,
+    user_idx,
+    searchpoint,
+    ST_AsText(line) AS line,
+    ST_AsText(center) AS center,
+    zoom,
+    heading,
+    sharing,
+    likecount,
+    color,
+    thickness,
+    background,
+    createtime,
+    updatetime
+FROM 
+    tracking.list
+WHERE 
+    idx = $1
+`
+
+
+const getRecentTrackingImgSQL =
+`
+SELECT 
+    idx,
+    user_idx,
+    searchpoint,
+    ST_AsText(line) AS line,
+    ST_AsText(center) AS center,
+    zoom,
+    heading,
+    sharing,
+    likecount,
+    color,
+    thickness,
+    background,
+    createtime,
+    updatetime
+FROM 
+    tracking.list
+WHERE 
+    sharing = true
+ORDER BY 
+    idx DESC
+LIMIT
+    20
+OFFSET
+    $1 - 1
+`
+
+
+
+module.exports = {getWhatTrackingImageSQL,getRecentTrackingImgSQL}
