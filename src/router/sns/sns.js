@@ -6,6 +6,7 @@ const {checkData,checkSetData,checkLike,checkNotLike} = require("../../middlewar
 
 const {postLikeTrackingImg,deleteLikeTrackingImg,getWhatTrackingImage,getRecentTrackingImg,getLikeCountTrackingImg} = require("./service")
 
+
 // SNS 페이지 기본 트래킹 이미지들 가져오기 ( 24시간 좋아요 순 )
 router.get("/list/default",
 
@@ -20,6 +21,7 @@ router.get("/list/recent",
     checkIdx("page"),
     getRecentTrackingImg
 )
+
 // SNS 페이지 특정 트래킹 이미지 가져오기
 router.get("/tracking-image/:idx",
     checkIdx("idx"),
@@ -41,6 +43,5 @@ router.delete("/like",
     checkNotLike(),
     deleteLikeTrackingImg
 )
-
 
 module.exports = router 

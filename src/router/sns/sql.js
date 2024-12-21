@@ -64,6 +64,7 @@ ORDER BY
 LIMIT
     20
 OFFSET
+
     ($1 - 1) * 20
 `
 
@@ -99,3 +100,4 @@ OFFSET
 
 
 module.exports = {getWhatTrackingImageSQL,getRecentTrackingImgSQL,getLikeCountTrackingImgSQL}
+
