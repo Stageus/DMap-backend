@@ -64,9 +64,40 @@ ORDER BY
 LIMIT
     20
 OFFSET
-    $1 - 1
+
+    ($1 - 1) * 20
+`
+
+const getLikeCountTrackingImgSQL =
+`
+SELECT 
+    idx,
+    user_idx,
+    searchpoint,
+    ST_AsText(line) AS line,
+    ST_AsText(center) AS center,
+    zoom,
+    heading,
+    sharing,
+    likecount,
+    color,
+    thickness,
+    background,
+    createtime,
+    updatetime
+FROM 
+    tracking.list
+WHERE 
+    sharing = true
+ORDER BY 
+    likecount DESC
+LIMIT
+    20
+OFFSET
+    ($1 - 1) * 20
 `
 
 
 
-module.exports = {getWhatTrackingImageSQL,getRecentTrackingImgSQL}
+module.exports = {getWhatTrackingImageSQL,getRecentTrackingImgSQL,getLikeCountTrackingImgSQL}
+

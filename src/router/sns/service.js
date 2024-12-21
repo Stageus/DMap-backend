@@ -2,7 +2,7 @@ const client = require("../../database/postgreSQL")
 const customError = require("../../middleware/customError")
 const {convertMultiLine,convertCenterPoint,convertFromMultiLine} = require("../../constant/constant")
 
-const {getWhatTrackingImageSQL,getRecentTrackingImgSQL} = require("./sql")
+const {getWhatTrackingImageSQL,getRecentTrackingImgSQL,getLikeCountTrackingImgSQL} = require("./sql")
 
 
 // =========================== 서비스 ============================
@@ -18,6 +18,22 @@ const getDefaultSNSPage = async (req,res,next) => {
         next(e)
     }
 }
+
+// 전체 좋아요 순 트래킹 이미지 가져오기
+const getLikeCountTrackingImg = async (req,res,next) => {
+    const {page} = req.query
+
+    try{
+        const result = await client.query(getLikeCountTrackingImgSQL, [page])
+        result.rows.forEach(obj => {
+            obj.line = convertFromMultiLine(obj.line)
+        });
+        res.status(200).send({ message : result.rows })
+    }catch(e){
+        next(e)
+    }
+}
+
 
 // 최신순 트래킹 이미지 가져오기
 const getRecentTrackingImg = async (req,res,next) => {
@@ -37,10 +53,7 @@ const getRecentTrackingImg = async (req,res,next) => {
 // 특정 트래킹 이미지 가져오기
 const getWhatTrackingImage = async (req, res, next) => {
     try {
-        console.log("라우터 실행됨");
         const { idx } = req.params;
-        console.log("idx:", idx);
-
         const result = await client.query(getWhatTrackingImageSQL, [idx]);
         res.status(200).send({ message: result.rows });
     } catch (e) {
@@ -84,4 +97,4 @@ const deleteLikeTrackingImg = async (req,res,next) => {
     }
 }
 
-module.exports = {postLikeTrackingImg,deleteLikeTrackingImg,getWhatTrackingImage,getRecentTrackingImg}
+module.exports = {postLikeTrackingImg,deleteLikeTrackingImg,getWhatTrackingImage,getRecentTrackingImg,getLikeCountTrackingImg}

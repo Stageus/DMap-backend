@@ -21,6 +21,7 @@ app.use("/sns", snsRouter);
 
 // ============== 공통 에러 핸들러 ===========
 
+
 const notFoundMiddleware = require("./src/middleware/notFound");
 app.use(notFoundMiddleware);
 
