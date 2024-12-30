@@ -1,4 +1,4 @@
-const customError = require("../middleware/customError")
+const customError = require("../util/customError")
 
 // reg = 정규표현식, check = 들어올 key 값
 // 정규표현식으로 검증할 미들웨어

@@ -10,11 +10,13 @@ app.use(express.json());
 // const accountRouter = require("./src/router/account/account")
 // app.use("/account", accountRouter)
 
-const trackingRouter = require("./src/router/tracking/tracking");
-app.use("/tracking", trackingRouter);
 
-const snsRouter = require("./src/router/sns/sns");
-app.use("/sns", snsRouter);
+const trackingRouter = require("./src/router/tracking/router")
+app.use("/tracking", trackingRouter)
+
+
+const snsRouter = require("./src/router/sns/router")
+app.use("/sns", snsRouter)
 
 // const searchRouter = require("./src/router/search/search")
 // app.use("/search", searchRouter)

@@ -1,7 +1,7 @@
 const client = require("../../database/postgreSQL")
-const customError = require("../../middleware/customError")
+const customError = require("../../util/customError")
 const {createTrackingImgSQL,getMyTrackingImgSQL,getUserTrackingImgSQL,deleteTrackingImgSQL,getTrackingLineSQL,putTrackingImageSQL} = require("./sql")
-const {convertMultiLine,convertCenterPoint,convertFromMultiLine} = require("../../constant/constant")
+const {convertMultiLine,convertCenterPoint,convertFromMultiLine} = require("../../util/util")
 
 
 // ===================================== 서비스 ===================================
@@ -39,10 +39,12 @@ const getMyTrackingImg = async (req,res,next) => {
 
 // 다른 사용자 전체 트래킹 이미지 가져오기
 const getUserTrackingImg = async (req,res,next) => {
-    const {idx} = req.params
-
+    const {user_idx} = req.params
+    const {my_idx} = req.body
+    console.log(user_idx,my_idx)
     try{
-        const result = await client.query(getUserTrackingImgSQL, [idx])
+        const result = await client.query(getUserTrackingImgSQL, [user_idx,my_idx])
+
         result.rows.forEach(obj => {
             obj.line = convertFromMultiLine(obj.line)
         });
@@ -55,10 +57,10 @@ const getUserTrackingImg = async (req,res,next) => {
 // 나의 트래킹 이미지 삭제
 const deleteTrackingImg = async (req,res,next) => {
     const {user_idx} = req.body
-    const {idx} = req.params
+    const {tracking_idx} = req.params
 
     try{
-        await client.query(deleteTrackingImgSQL,[user_idx,idx])
+        await client.query(deleteTrackingImgSQL,[user_idx,tracking_idx])
         res.status(200).send({})
     }catch(e){
         next(e)
@@ -69,10 +71,10 @@ const deleteTrackingImg = async (req,res,next) => {
 // 트래킹 라인 가져오기
 const getTrackingLine = async (req,res,next) => {
     const {user_idx} = req.body
-    const {idx} = req.params
+    const {tracking_idx} = req.params
 
     try{
-        const result = await client.query(getTrackingLineSQL, [user_idx,idx])
+        const result = await client.query(getTrackingLineSQL, [user_idx,tracking_idx])
         result.rows.forEach(obj => {
             obj.line = convertFromMultiLine(obj.line)
         });
@@ -85,12 +87,12 @@ const getTrackingLine = async (req,res,next) => {
 
 // 트래킹 이미지 수정
 const putTrackingImage = async (req,res,next) => {
-    const {idx} = req.params
+    const {tracking_idx} = req.params
     const {user_idx,center,zoom,heading,sharing,color,thickness,background} = req.body
     const point = convertCenterPoint(center)
 
     try{
-        await client.query(putTrackingImageSQL, [point,zoom,heading,sharing,color,thickness,background,user_idx,idx])
+        await client.query(putTrackingImageSQL, [point,zoom,heading,sharing,color,thickness,background,user_idx,tracking_idx])
         res.status(200).send({})
     }catch(e){
         next(e)

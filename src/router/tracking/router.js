@@ -1,6 +1,5 @@
 const router = require("express").Router()
 
-
 const {createTrackingImg,getMyTrackingImg,getUserTrackingImg,deleteTrackingImg,getTrackingLine,putTrackingImage} = require("./service")
 const {regColor,searchPoint} = require("../../constant/regx")
 const {checkRegInput,checkIdx,checkZoom,checkHeading,checkSharing,checkThickness,checkBackground,checkLine,checkCenter} = require("../../middleware/checkInput")
