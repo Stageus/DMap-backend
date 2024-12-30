@@ -20,6 +20,7 @@ router.get("/list/recent",
     checkIdx("page"),
     getRecentTrackingImg
 )
+
 // SNS 페이지 특정 트래킹 이미지 가져오기
 router.get("/tracking-image/:tracking_idx",
     checkIdx("user_idx"),

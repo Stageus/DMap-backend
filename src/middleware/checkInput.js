@@ -22,6 +22,7 @@ const checkRegInput = (reg,check) => {
 const checkIdx = (input) => {
     return (req,res,next) => {
         const value = req.body[input] || req.params[input] || req.query[input]
+        
         try {
             if(Number.isNaN(Number(value)) || !value) throw customError (400, `${input} 양식 오류`)
             next()
