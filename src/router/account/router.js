@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const trycatchWrapper = require("./../../module/trycatchWrapper");
+const trycatchWrapper = require("../../module/trycatchWrapper");
 
 const {
   naverLoginPageLogic,
