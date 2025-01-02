@@ -1,9 +1,23 @@
 const crypto = require("crypto");
 const axios = require("axios");
 const client = require("./../../database/postgreSQL");
-const { checkAccountSql, checkNickNameSql, postAccountSql } = require("./sql");
+const {
+  checkAccountGoogleSql,
+  checkAccountKakaoSql,
+  checkAccountNaverSql,
+  checkNickNameSql,
+  postAccountGoogleSql,
+  postAccountKakaoSql,
+  postAccountNaverSql,
+  getRefreshTokenSql,
+  putRefreshTokenSql,
+  getAccountSql,
+  putNicknameSql,
+  putImageSql,
+  deleteAccountSql,
+} = require("./sql");
 
-// 네이버 OAuth2.0--------------------------------------------------------------------
+// 네이버 OAuth2---------------------------------------------------------------------------------
 const naverLoginPageLogic = () => {
   const state = crypto.randomBytes(16).toString("hex"); // CSRF 방지용 상태값
   const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${
@@ -40,11 +54,21 @@ const naverLoginRedirectLogic = async (code, state) => {
   return userResponse.data.response.id;
 };
 
-// -------------------------------------------------------------------------
-const checkAccountLogic = async (userIdx) => {
-  const result = await client.query(checkAccountSql, [userIdx]);
-  if (result.rows.length != 0) return true;
-  else return false;
+// 계정확인-------------------------------------------------------------------------
+const checkAccountLogic = async (platform, id) => {
+  if (platform == "google") {
+    const result = await client.query(checkAccountGoogleSql, [id]);
+    if (result.rows.length != 0) return true;
+    else return false;
+  } else if (platform == "kakao") {
+    const result = await client.query(checkAccountKakaoSql, [id]);
+    if (result.rows.length != 0) return true;
+    else return false;
+  } else {
+    const result = await client.query(checkAccountNaverSql, [id]);
+    if (result.rows.length != 0) return true;
+    else return false;
+  }
 };
 
 // token발급---------------------------------------------------------------------
@@ -100,6 +124,14 @@ const randomNickNameLogic = async () => {
   }
 
   return nickName;
+};
+
+// 계정생성---------------------------------------------------------------------------
+const postAccountLogic = async (platform, id, nickName) => {
+  if (platform == "google") {
+  } else if (platform == "kakao") {
+  } else {
+  }
 };
 
 module.exports = {

@@ -3,12 +3,14 @@ const router = require("express").Router();
 const trycatchWrapper = require("../../module/trycatchWrapper");
 
 const {
-  naverLoginPageLogic,
-  naverLoginRedirectLogic,
-  checkAccountLogic,
-  setAccessToken,
-  setRefreshToken,
-  randomNickNameLogic,
+  checkAccountGoogleSql,
+  checkAccountKakaoSql,
+  checkAccountNaverSql,
+  checkNickNameSql,
+  postAccountGoogleSql,
+  postAccountKakaoSql,
+  postAccountNaverSql,
+  postRefreshTokenSql,
 } = require("./service");
 
 router.get(
