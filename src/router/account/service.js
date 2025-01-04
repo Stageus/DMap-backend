@@ -166,12 +166,18 @@ const postAccountLogic = async (platform, id, nickName) => {
 };
 
 // 계정 정보 가져오기------------------------------------------------------------------
-const getAccountInf = async (userIdx) => {
-  const result = await client.query(getAccountSql, [userIdx]);
-  const nickName = result.rows[0].nickname;
-  const image = result.rows[0].image;
+const getAccountInf = async (idx) => {
+  const result = await client.query(getAccountSql, [idx]);
 
-  return { userIdx, nickName, image };
+  if (result.rows.length == 0) {
+    throw customError(404, "user_idx가 존재하지 않습니다.");
+  }
+
+  const userIdx = result.rows[0].idx;
+  const nickName = result.rows[0].nickname;
+  const imgUrl = result.rows[0].img_url;
+
+  return { userIdx, nickName, imgUrl };
 };
 
 // 회원 정보 변경------------------------------------------------------------------------

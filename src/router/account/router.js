@@ -1,6 +1,7 @@
 const router = require("express").Router();
-
+const checkLogin = require("./../../middleware/checkLogin");
 const trycatchWrapper = require("../../module/trycatchWrapper");
+const { checkIdx } = require("./../../middleware/checkInput");
 
 const {
   getNaverLoginPage,
@@ -27,7 +28,7 @@ const {
 
 router.get(
   "/login/naver",
-  trycatchWrapper(async (req, res, next) => {
+  trycatchWrapper((req, res, next) => {
     res.redirect(getNaverLoginPage());
   })
 );
@@ -60,7 +61,34 @@ router.get(
     await postRefreshTokenLogic(refreshToken, userIdx);
     res
       .status(200)
-      .json({ access_token: accessToken, refresh_token: refreshToken });
+      .send({ access_token: accessToken, refresh_token: refreshToken });
+  })
+);
+
+router.get(
+  "/me",
+  checkLogin,
+  trycatchWrapper(async (req, res, next) => {
+    const { idx } = req.decoded;
+    const { userIdx, nickName, imgUrl } = await getAccountInf(idx);
+    res.status(200).send({
+      idx: userIdx,
+      nickname: nickName,
+      image_url: imgUrl,
+    });
+  })
+);
+
+router.get(
+  "/:idx",
+  checkIdx("idx"),
+  trycatchWrapper(async (req, res, next) => {
+    const { idx } = req.params;
+    const { nickName, imgUrl } = await getAccountInf(idx);
+    res.status(200).send({
+      nickname: nickName,
+      image_url: imgUrl,
+    });
   })
 );
 

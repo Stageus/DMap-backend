@@ -17,7 +17,7 @@ const putRefreshTokenSql =
 
 // 회원 정보 가져오기 sql문 ------------------------------------------
 const getAccountSql =
-  "SELECT idx, nickname, image FROM account.list WHERE idx=$1;";
+  "SELECT idx, nickname, img_url FROM account.list WHERE idx=$1;";
 const getUserIdxGoogleSql =
   "SELECT idx FROM account.list WHERE google_user_id=$1;";
 const getUserIdxKakaoSql =
@@ -27,7 +27,7 @@ const getUserIdxNaverSql =
 
 // 회원 정보 변경 sql문 -------------------------------------------
 const putNicknameSql = "UPDATE account.list SET nickname=$1 WHERE idx=$2;";
-const putImageSql = "UPDATE account.list SET image=$1 WHERE idx=$2;";
+const putImageSql = "UPDATE account.list SET img_url=$1 WHERE idx=$2;";
 
 // 회원 탈퇴 sql문 -------------------------------------------------
 const deleteAccountSql = "DELETE FROM account.list WHERE idx=$1;";
