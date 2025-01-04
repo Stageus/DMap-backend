@@ -3,51 +3,64 @@ const router = require("express").Router();
 const trycatchWrapper = require("../../module/trycatchWrapper");
 
 const {
-  checkAccountGoogleSql,
-  checkAccountKakaoSql,
-  checkAccountNaverSql,
-  checkNickNameSql,
-  postAccountGoogleSql,
-  postAccountKakaoSql,
-  postAccountNaverSql,
-  postRefreshTokenSql,
+  getNaverLoginPage,
+  naverLoginRedirectLogic,
+
+  getUserIdxLogic,
+
+  getAccountInf,
+
+  setAccessToken,
+  setRefreshToken,
+  isValidRefreshToken,
+  postRefreshTokenLogic,
+
+  getNickNameLogic,
+
+  postAccountLogic,
+
+  putNicknameLogic,
+  putImageLogic,
+
+  deleteAccountLogic,
 } = require("./service");
 
 router.get(
-  "/naver/login",
+  "/login/naver",
   trycatchWrapper(async (req, res, next) => {
-    naverLoginPageLogic();
-    res.status(200).send();
+    res.redirect(getNaverLoginPage());
   })
 );
 
 router.get(
-  "/naver/redirect/login",
+  "/login/redirect/naver",
   trycatchWrapper(async (req, res, next) => {
     const { code, state } = req.query;
+    let accessToken;
+    let refreshToken;
+    let userIdx = null;
 
-    try {
-      const userId = await naverLoginRedirectLogic(code, state);
+    const naverId = await naverLoginRedirectLogic(code, state);
+    userIdx = await getUserIdxLogic("NAVER", naverId);
 
-      const accessToken = jwt.sign(
-        {
-          id: userId,
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        {
-          expiresIn: "2h",
-        }
-      );
+    if (userIdx) {
+      console.log("a " + userIdx);
+      accessToken = setAccessToken(userIdx);
+      refreshToken = setRefreshToken(userIdx);
+    } else {
+      const nickName = await getNickNameLogic(); //회원가입 과정
+      await postAccountLogic("NAVER", naverId, nickName);
+      userIdx = await getUserIdxLogic("NAVER", naverId);
+      console.log("b " + userIdx);
 
-      const refreshToken = jwt.sign({}, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: "3d",
-      });
-
-      res.status(200).json({ accessToken, refreshToken });
-    } catch (error) {
-      console.error("Error during Naver OAuth process:", error.message);
-      res.status(500).json({ error: "OAuth process failed" });
+      accessToken = setAccessToken(userIdx);
+      refreshToken = setRefreshToken(userIdx);
     }
+
+    await postRefreshTokenLogic(refreshToken, userIdx);
+    res
+      .status(200)
+      .json({ access_token: accessToken, refresh_token: refreshToken });
   })
 );
 

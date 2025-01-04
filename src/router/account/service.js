@@ -2,23 +2,29 @@ const crypto = require("crypto");
 const axios = require("axios");
 const client = require("./../../database/postgreSQL");
 const {
-  checkAccountGoogleSql,
-  checkAccountKakaoSql,
-  checkAccountNaverSql,
   checkNickNameSql,
+
   postAccountGoogleSql,
   postAccountKakaoSql,
   postAccountNaverSql,
+
+  getAccountSql,
+  getUserIdxGoogleSql,
+  getUserIdxKakaoSql,
+  getUserIdxNaverSql,
+
   getRefreshTokenSql,
   putRefreshTokenSql,
-  getAccountSql,
+
   putNicknameSql,
   putImageSql,
+
   deleteAccountSql,
 } = require("./sql");
+const customError = require("./../../util/customError");
 
 // 네이버 OAuth2---------------------------------------------------------------------------------
-const naverLoginPageLogic = () => {
+const getNaverLoginPage = () => {
   const state = crypto.randomBytes(16).toString("hex"); // CSRF 방지용 상태값
   const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${
     process.env.NAVER_CLIENT_ID
@@ -55,23 +61,25 @@ const naverLoginRedirectLogic = async (code, state) => {
 };
 
 // 계정확인-------------------------------------------------------------------------
-const checkAccountLogic = async (platform, id) => {
-  if (platform == "google") {
-    const result = await client.query(checkAccountGoogleSql, [id]);
-    if (result.rows.length != 0) return true;
-    else return false;
-  } else if (platform == "kakao") {
-    const result = await client.query(checkAccountKakaoSql, [id]);
-    if (result.rows.length != 0) return true;
-    else return false;
+const getUserIdxLogic = async (platform, id) => {
+  let result = null;
+
+  if (platform == "GOOGLE") {
+    result = await client.query(getUserIdxGoogleSql, [id]);
+  } else if (platform == "KAKAO") {
+    result = await client.query(getUserIdxKakaoSql, [id]);
+  } else if (platform == "NAVER") {
+    result = await client.query(getUserIdxNaverSql, [id]);
+  }
+
+  if (result.rows.length > 0) {
+    return result.rows[0].idx; // idx를 반환
   } else {
-    const result = await client.query(checkAccountNaverSql, [id]);
-    if (result.rows.length != 0) return true;
-    else return false;
+    return null;
   }
 };
 
-// token발급---------------------------------------------------------------------
+// token관련---------------------------------------------------------------------
 const jwt = require("jsonwebtoken");
 
 const setAccessToken = (userIdx) => {
@@ -88,16 +96,35 @@ const setAccessToken = (userIdx) => {
 };
 
 const setRefreshToken = (userIdx) => {
-  const refreshToken = jwt.sign(
-    {
-      idx: userIdx,
-    },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: "3d",
-    }
-  );
+  const refreshToken = jwt.sign({}, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "3d",
+  });
   return refreshToken;
+};
+
+const isValidRefreshToken = async (refreshToken) => {
+  const result = await client.query(getRefreshTokenSql, [refreshToken]);
+
+  if (result.rows.length == 0)
+    throw customError(403, "잘못된 리프레쉬 토큰입니다.");
+
+  const expiresAt = new Date(result.rows[0].expires_at); // expires_at 필드 가져오기
+  const now = new Date(); // 현재 시간 가져오기
+
+  if (now >= expiresAt)
+    throw customError(401, "리프레쉬 토큰이 만료되었습니다.");
+
+  return true; // 유효한 경우 true 반환
+};
+
+const postRefreshTokenLogic = async (refreshToken, userIdx) => {
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 3);
+  const result = await client.query(putRefreshTokenSql, [
+    refreshToken,
+    expiresAt,
+    userIdx,
+  ]);
 };
 
 // 닉네임--------------------------------------------------------------------------
@@ -108,7 +135,8 @@ const getRandomWord = (list) => {
   return list[randomIndex];
 };
 
-const randomNickNameLogic = async () => {
+const getNickNameLogic = async () => {
+  // 만약에 경우의 수가 없는 상황도 생각을 해놓긴 해야한다.
   let checkVal = false;
   let nickName = null;
 
@@ -128,17 +156,57 @@ const randomNickNameLogic = async () => {
 
 // 계정생성---------------------------------------------------------------------------
 const postAccountLogic = async (platform, id, nickName) => {
-  if (platform == "google") {
-  } else if (platform == "kakao") {
-  } else {
+  if (platform == "GOOGLE") {
+    const result = await client.query(postAccountGoogleSql, [id, nickName]);
+  } else if (platform == "KAKAO") {
+    const result = await client.query(postAccountKakaoSql, [id, nickName]);
+  } else if (platform == "NAVER") {
+    const result = await client.query(postAccountNaverSql, [id, nickName]);
   }
 };
 
+// 계정 정보 가져오기------------------------------------------------------------------
+const getAccountInf = async (userIdx) => {
+  const result = await client.query(getAccountSql, [userIdx]);
+  const nickName = result.rows[0].nickname;
+  const image = result.rows[0].image;
+
+  return { userIdx, nickName, image };
+};
+
+// 회원 정보 변경------------------------------------------------------------------------
+const putNicknameLogic = async (nickName, userIdx) => {
+  const result = await client.query(putNicknameSql, [nickName, userIdx]);
+};
+
+const putImageLogic = async (imageUrl, userIdx) => {
+  const result = await client.query(putImageSql, [imageUrl, userIdx]);
+};
+
+// 회원 탈퇴-----------------------------------------------------------------------------
+const deleteAccountLogic = async (userIdx) => {
+  const result = await client.query(deleteAccountSql, [userIdx]);
+};
+
 module.exports = {
-  naverLoginPageLogic,
+  getNaverLoginPage,
   naverLoginRedirectLogic,
-  checkAccountLogic,
+
+  getUserIdxLogic,
+
+  getAccountInf,
+
   setAccessToken,
   setRefreshToken,
-  randomNickNameLogic,
+  isValidRefreshToken,
+  postRefreshTokenLogic,
+
+  getNickNameLogic,
+
+  postAccountLogic,
+
+  putNicknameLogic,
+  putImageLogic,
+
+  deleteAccountLogic,
 };
