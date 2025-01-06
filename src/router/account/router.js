@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const checkLogin = require("./../../middleware/checkLogin");
 const trycatchWrapper = require("../../module/trycatchWrapper");
-const { checkIdx } = require("./../../middleware/checkInput");
+const { checkIdx, checkNickname } = require("./../../middleware/checkInput");
 
 const {
   getNaverLoginPage,
@@ -26,6 +26,7 @@ const {
   deleteAccountLogic,
 } = require("./service");
 
+// 네이버 로그인
 router.get(
   "/login/naver",
   trycatchWrapper((req, res, next) => {
@@ -65,6 +66,7 @@ router.get(
   })
 );
 
+// 계정 정보 가져오기
 router.get(
   "/me",
   checkLogin,
@@ -80,7 +82,7 @@ router.get(
 );
 
 router.get(
-  "/:idx",
+  "/info/:idx",
   checkIdx("idx"),
   trycatchWrapper(async (req, res, next) => {
     const { idx } = req.params;
@@ -92,4 +94,46 @@ router.get(
   })
 );
 
+// 회원탈퇴
+router.delete(
+  "/user",
+  checkLogin,
+  trycatchWrapper(async (req, res, next) => {
+    const { idx } = req.decoded;
+
+    await deleteAccountLogic(idx);
+    res.status(200).send();
+  })
+);
+
+// 닉네임
+router.get(
+  "/nickname",
+  trycatchWrapper(async (req, res, next) => {
+    let list = [];
+    for (let i = 0; i < 10; i++) {
+      const nickname = await getNickNameLogic();
+      list.push(nickname);
+    }
+    res.status(200).send({
+      nickname: list,
+    });
+  })
+);
+
+router.put(
+  "/nickname",
+  checkNickname("nickname"),
+  checkLogin,
+  trycatchWrapper(async (req, res, next) => {
+    const { idx } = req.decoded;
+    const { nickname } = req.body;
+
+    const result = await putNicknameLogic(nickname, idx);
+
+    res.status(200).send({
+      message: "닉네임 변경 성공",
+    });
+  })
+);
 module.exports = router;
