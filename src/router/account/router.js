@@ -2,6 +2,9 @@ const router = require("express").Router();
 const checkLogin = require("./../../middleware/checkLogin");
 const trycatchWrapper = require("../../module/trycatchWrapper");
 const { checkIdx, checkNickname } = require("./../../middleware/checkInput");
+const checkDuplicate = require("./../../middleware/checkDuplicate");
+
+const { checkNicknameSql } = require("./sql");
 
 const {
   getNaverLoginPage,
@@ -123,8 +126,9 @@ router.get(
 
 router.put(
   "/nickname",
-  checkNickname("nickname"),
   checkLogin,
+  checkNickname("nickname"),
+  checkDuplicate(checkNicknameSql, "중복된 닉네임입니다.", ["nickname"]),
   trycatchWrapper(async (req, res, next) => {
     const { idx } = req.decoded;
     const { nickname } = req.body;

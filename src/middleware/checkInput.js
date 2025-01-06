@@ -167,8 +167,9 @@ const checkNickname = (input) => {
     const value = req.body[input] || req.params[input] || req.query[input];
 
     try {
-      if (value.length < 1 && value.length > 20)
+      if (value.length < 1 || value.length > 20) {
         throw customError(400, `${input} 양식 오류`);
+      }
       next();
     } catch (e) {
       next(e);

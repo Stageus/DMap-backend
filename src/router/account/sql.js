@@ -1,5 +1,5 @@
 // 체크 sql문 ---------------------------------
-const checkNickNameSql = "SELECT * FROM account.list WHERE nickname=$1;";
+const checkNicknameSql = "SELECT * FROM account.list WHERE nickname=$1;";
 
 // 회원가입 sql문 --------------------------------
 const postAccountGoogleSql =
@@ -33,7 +33,7 @@ const putImageSql = "UPDATE account.list SET img_url=$1 WHERE idx=$2;";
 const deleteAccountSql = "DELETE FROM account.list WHERE idx=$1;";
 
 module.exports = {
-  checkNickNameSql,
+  checkNicknameSql,
 
   postAccountGoogleSql,
   postAccountKakaoSql,
